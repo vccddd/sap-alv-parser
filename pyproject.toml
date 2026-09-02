@@ -1,0 +1,24 @@
+[project]
+name = "sap-parser"
+version = "0.1.0"
+description = "Parser for SAP ALV fixed-width `|`-delimited reports"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
+    "prettytable>=3.18.0",
+]
+
+[project.scripts]
+sap-parse = "sap_parser.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.11.27,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.411",
+    "pytest>=9.1.1",
+]
