@@ -217,7 +217,7 @@ wheels = [
 ]
 
 [[package]]
-name = "sap-parser"
+name = "sap-alv-parser"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

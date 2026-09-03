@@ -1,4 +1,4 @@
-# sap-parser
+# sap-alv-parser
 
 Parser for SAP ALV fixed-width `|`-delimited reports. It turns "unconverted" /
 text-format SAP exports into one or more wide tables, merges pagination
@@ -23,7 +23,7 @@ automatically, and hard-codes no column names, column counts, or column widths.
 ## Install
 
 ```bash
-uv add sap-parser       # as a dependency
+uv add sap-alv-parser       # as a dependency
 # or, for local development
 uv sync                 # installs dependencies (pandas / numpy / pytest)
 ```
@@ -33,7 +33,7 @@ Requirements: Python ≥ 3.13, `pandas`, `numpy`.
 ## Quick start
 
 ```python
-from sap_parser import parse_blocks, parse_table
+from sap_alv_parser import parse_blocks, parse_table
 
 # parse all blocks (each becomes a wide table)
 tables = parse_blocks("report.txt")
@@ -48,7 +48,7 @@ df = main.to_pandas()          # pandas.DataFrame
 Command line:
 
 ```bash
-uv run sap-parse report.txt -o output.csv --all
+uv run sap-alv-parse report.txt -o output.csv --all
 ```
 
 ## Recognized grammar
@@ -111,10 +111,10 @@ uv run pytest
 ## Project structure
 
 ```
-src/sap_parser/
+src/sap_alv_parser/
 ├── __init__.py     # exports Table / parse_blocks / parse_table
 ├── parser.py       # core parsing logic
-└── cli.py          # sap-parse command line
+└── cli.py          # sap-alv-parse command line
 tests/
 └── test_parser.py  # tests (synthetic fixtures only)
 ```

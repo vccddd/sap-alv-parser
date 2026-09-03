@@ -1,17 +1,31 @@
 [project]
-name = "sap-parser"
+name = "sap-alv-parser"
 version = "0.1.0"
 description = "Parser for SAP ALV fixed-width `|`-delimited reports"
 readme = "README.md"
 requires-python = ">=3.13"
+license = "MIT"
+authors = [
+    { name = "vccddd" },
+]
+keywords = ["sap", "alv", "parser", "fixed-width", "text-export"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing",
+]
 dependencies = [
     "numpy>=2.5.2",
     "pandas>=3.0.5",
     "prettytable>=3.18.0",
 ]
 
+[project.urls]
+Repository = "https://github.com/vccddd/sap-alv-parser"
+
 [project.scripts]
-sap-parse = "sap_parser.cli:main"
+sap-alv-parse = "sap_alv_parser.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.27,<0.12.0"]

@@ -1,4 +1,4 @@
-"""Tests for sap_parser, using synthetic SAP ALV export fixtures.
+"""Tests for sap_alv_parser, using synthetic SAP ALV export fixtures.
 
 Real export data is sensitive and has been removed from this repository; every
 test builds its own fixture inline.
@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from sap_parser import parse_blocks, parse_table
+from sap_alv_parser import parse_blocks, parse_table
 
 
 def _display_width(s: str) -> int:
