@@ -1,9 +1,9 @@
 [project]
 name = "sap-alv-parser"
-version = "0.1.0"
+version = "0.2.0"
 description = "Parser for SAP ALV fixed-width `|`-delimited reports"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [
     { name = "vccddd" },
@@ -11,14 +11,19 @@ authors = [
 keywords = ["sap", "alv", "parser", "fixed-width", "text-export"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.10",
     "Operating System :: OS Independent",
     "Topic :: Text Processing",
 ]
-dependencies = [
-    "numpy>=2.5.2",
-    "pandas>=3.0.5",
-    "prettytable>=3.18.0",
+# 核心解析是纯 stdlib 实现；pandas/prettytable 仅供 to_pandas()/to_prettytable() 使用
+dependencies = []
+
+[project.optional-dependencies]
+pandas = [
+    "pandas>=2.2",
+]
+pretty = [
+    "prettytable>=3.0",
 ]
 
 [project.urls]
@@ -33,6 +38,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pandas>=2.2",      # test_to_pandas 需要
     "pyright>=1.1.411",
     "pytest>=9.1.1",
 ]

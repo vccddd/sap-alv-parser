@@ -25,10 +25,18 @@ automatically, and hard-codes no column names, column counts, or column widths.
 ```bash
 uv add sap-alv-parser       # as a dependency
 # or, for local development
-uv sync                 # installs dependencies (pandas / numpy / pytest)
+uv sync                 # installs dev dependencies (pytest / pandas)
 ```
 
-Requirements: Python ≥ 3.13, `pandas`, `numpy`.
+Requirements: Python ≥ 3.10.
+
+Core parsing is pure stdlib — no dependencies.
+Optional extras for the convenience converters:
+
+```bash
+uv add "sap-alv-parser[pandas]"   # enables to_pandas()
+uv add "sap-alv-parser[pretty]"   # enables to_prettytable()
+```
 
 ## Quick start
 
