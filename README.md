@@ -12,6 +12,10 @@ automatically, and hard-codes no column names, column counts, or column widths.
   main data table are each parsed into their own table.
 - **CJK friendly** — full-width characters (CJK) are normalized by display width
   (2 columns), so CJK names do not shift column positions.
+- **Wide-table line wrap** — grids wider than the page are wrapped by SAP into
+  stacked *column bands* (identity columns on the first band, remaining columns
+  on continuation bands); the bands are detected and stitched back into single
+  wide rows, pagination included.
 - **`|` inside cells** — multi-value fields (e.g. shifts) that use `|` internally
   are not confused with column separators.
 - **Multi-line cells** — cells containing newlines (e.g. multi-line remarks) are
@@ -65,22 +69,29 @@ These exports are a sequence of *blocks*, each following the same pattern:
 
 ```
 report := stats_block? page+
-page   := sep_line header_line sep_line data_line+
+page   := sep_line+ header_record sep_line+ data_record+
 sep    := '-'+ | '|' '-'+ | '|' '-'+ '|'
 header := '|' label ('|' label)*
 data   := '|' field ('|' field)*      # fixed-width field, may itself contain '|'
 ```
 
+Both the header and the data records may span several physical lines: either
+because a cell contains a newline, or because the grid is line-wrapped into
+column bands (SAP wraps when the table exceeds the page width).
+
 ## How it works
 
 1. **Single-block parsing** — normalize by display width → infer column boundaries
    from `|` coverage → drop the phantom column created by a trailing edge `|`.
-2. **Multi-block recognition** — a header is the `|` line sandwiched between two
+2. **Multi-block recognition** — a header is the line sandwiched between two
    separator lines and immediately followed by a data line (content-independent);
    blocks sharing the same header (pagination) are merged into one table.
 3. **Record reassembly** — records whose cells contain newlines span several
    physical lines; a record is complete once a `|` appears at every column
    boundary position.
+4. **Column-band stitching** — when the header itself spans several lines and
+   every record repeats that band rhythm, each physical line is split at its own
+   band's boundaries and the bands are concatenated into one wide row.
 
 ## `Table` interface
 

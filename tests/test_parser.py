@@ -74,6 +74,65 @@ def build_multiline_report(path: Path) -> None:
     path.write_text("\n".join([sep, hdr, pipe_sep, *rows, sep]), encoding="utf-8")
 
 
+def _cpad(s: str, w: int) -> str:
+    """Pad by code-point count (the convention of code-aligned exports)."""
+    return s + " " * (w - len(s))
+
+
+def build_banded_report(path: Path) -> None:
+    """Build a report whose grid is line-wrapped into two column bands.
+
+    Identity columns ride the first band of each record; date columns wrap onto
+    a second band that carries no leading pipe. Cells are code-point aligned
+    (CJK counts as 1), mirroring real wide exports. One shift cell uses an
+    internal ``|`` multi-segment value, and the last band's data lines end with
+    a right-edge pipe the header line lacks.
+    """
+    sep = "-" * 40
+    hdr1 = "|" + "|".join(_cpad(n, w) for n, w in [("ID", 7), ("Name", 8)]) + "|"
+    hdr2 = _cpad("20260908", 15) + "|" + "20260907"  # right edge open
+
+    def rec(pid: str, name: str, d1: str, d2: str) -> list[str]:
+        band1 = "|" + "|".join([_cpad(pid, 7), _cpad(name, 8)]) + "|"
+        band2 = _cpad(d1, 15) + "|" + d2 + "|"  # right edge pipe, no header twin
+        return [band1, band2]
+
+    lines = [
+        sep, hdr1, hdr2, sep,
+        *rec("1001", "任青", "07:00-17:00", "07:00-12:00|12:00-17:00"),
+        *rec("1002", "Bob", "", "09:00-18:00"),
+        sep, sep,  # page close + next page open
+        hdr1, hdr2, sep,
+        *rec("1003", "陈继生", "07:00-19:00", ""),
+        sep,
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+# ---- column-band (line-wrapped) layout ----
+
+def test_banded_wide_table(tmp_path):
+    f = tmp_path / "banded.txt"
+    build_banded_report(f)
+    t = parse_table(f)
+    assert t.columns == ["ID", "Name", "20260908", "20260907"]
+    assert t.shape == (3, 4)
+    assert t["ID"] == ["1001", "1002", "1003"]  # two pages merged, no band bleed
+    assert t["Name"] == ["任青", "Bob", "陈继生"]
+    assert t["20260907"] == ["07:00-12:00|12:00-17:00", "09:00-18:00", ""]
+    assert t["20260908"] == ["07:00-17:00", "", "07:00-19:00"]
+    assert t.to_pandas().shape == (3, 4)
+
+
+def test_split_row_tolerates_drifted_lines():
+    from sap_alv_parser.parser import split_row
+
+    # drifted boundaries (pipe beyond ±1) snap to the nearest pipe instead of
+    # raising; boundaries with no pipe at all yield empty cells
+    assert split_row("|a   |b   |", [0, 3, 8], "display") == ["a", "b", ""]
+    assert split_row("no pipes at all", [0, 5, 10], "display") == ["", "", ""]
+
+
 # ---- block detection ----
 
 def test_blocks_and_statistics(tmp_path):
